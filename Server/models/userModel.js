@@ -31,10 +31,20 @@ async function getUserByUserName(userName, email) {
     }
 }
 
+async function addRoleToUser(userId) {
+    try {
+        const pool = await sql.connect();
+        await pool.request().input('userId', userId)
+            .query('INSERT INTO User_Roles (UserRef,RoleRef) VALUES (@userId,2)');
+    } catch (err) {
+        throw err;
+    }
+}
 
 
 
 module.exports = {
     createUser,
-    getUserByUserName
+    getUserByUserName,
+    addRoleToUser
 }

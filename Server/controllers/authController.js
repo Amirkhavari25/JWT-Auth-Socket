@@ -1,4 +1,4 @@
-const { createUser,getUserByUserName } = require('../models/userModel');
+const { createUser, getUserByUserName, addRoleToUser } = require('../models/userModel');
 const bcrypt = require('bcrypt');
 
 const registerUser = async (req, res) => {
@@ -16,8 +16,9 @@ const registerUser = async (req, res) => {
         if (existUser) {
             return res.status(409).json({ message: 'User is already exist , try to login' });
         }
-        const hashedPassword = await bcrypt.hash(Password, 10);
+        const hashedPassword = await bcrypt.hash(password, 10);
         await createUser(userName, email, hashedPassword);
+        await addRoleToUser(await getUserByUserName(userName).Id);
         res.status(201).json({ message: 'User created succefully' });
     } catch (error) {
         res.status(500).json({ message: "something went wrong , Internal server Error" });
