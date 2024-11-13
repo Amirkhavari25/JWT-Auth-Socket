@@ -1,0 +1,10 @@
+@import url('../css/Font/Kalameh/fontiran.css');
+body {
+	font-family: KalamehWeb !important;
+	direction: rtl;
+	background-color: #1b1b1b;
+	margin: 0;
+    color: aliceblue;
+    text-align: right;
+}
+
