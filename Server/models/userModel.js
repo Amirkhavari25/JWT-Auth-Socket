@@ -1,9 +1,9 @@
-const sql = require('../config/dbConfig');
+const { connect } = require('../config/dbConfig');
 
 
 async function createUser(email, username, password) {
     try {
-        const pool = await sql.connect();
+        const pool = await connect();
         await pool.request().input('username', username)
             .input('email', email)
             .input('password', password)
@@ -21,7 +21,7 @@ async function createUser(email, username, password) {
 
 async function getUserByUserName(userName, email) {
     try {
-        const pool = await sql.connect();
+        const pool = await connect();
         const result = await pool.request().input('userName', userName)
             .input('email', email)
             .query('SELECT * FROM Users WHERE Username = @userName or Email=@email');
@@ -33,7 +33,7 @@ async function getUserByUserName(userName, email) {
 
 async function addRoleToUser(userId, roleRef) {
     try {
-        const pool = await sql.connect();
+        const pool = await connect();
         await pool.request()
             .input('userId', userId)
             .input('roleRef', roleRef)
