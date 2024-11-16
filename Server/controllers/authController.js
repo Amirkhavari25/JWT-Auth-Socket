@@ -17,11 +17,14 @@ const registerUser = async (req, res) => {
             return res.status(409).json({ message: 'User is already exist , try to login' });
         }
         const hashedPassword = await bcrypt.hash(password, 10);
-        await createUser(userName, email, hashedPassword);
-        await addRoleToUser(await getUserByUserName(userName).Id);
+        await createUser(email, userName, hashedPassword);
+        const createdUser = await getUserByUserName(userName, email);
+        //get user role to any user register for first time
+        await addRoleToUser(createdUser.Id, 2);
         res.status(201).json({ message: 'User created succefully' });
     } catch (error) {
         res.status(500).json({ message: "something went wrong , Internal server Error" });
+        console.error(error);
     }
 };
 

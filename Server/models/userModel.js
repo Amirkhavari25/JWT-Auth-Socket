@@ -31,11 +31,13 @@ async function getUserByUserName(userName, email) {
     }
 }
 
-async function addRoleToUser(userId) {
+async function addRoleToUser(userId, roleRef) {
     try {
         const pool = await sql.connect();
-        await pool.request().input('userId', userId)
-            .query('INSERT INTO User_Roles (UserRef,RoleRef) VALUES (@userId,2)');
+        await pool.request()
+            .input('userId', userId)
+            .input('roleRef', roleRef)
+            .query('INSERT INTO User_Roles (UserRef,RoleRef) VALUES (@userId,@roleRef)');
     } catch (err) {
         throw err;
     }
