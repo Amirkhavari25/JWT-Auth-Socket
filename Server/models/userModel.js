@@ -31,6 +31,19 @@ async function getUserByUserName(userName, email) {
     }
 }
 
+
+async function findUser(username) {
+    try {
+        const pool = await connect();
+        const result = await pool.request().input('userName', username)
+            .query('SELECT * FROM Users WHERE Username = @userName or Email=@userName');
+        return result.recordset[0];
+    } catch (err) {
+        throw err;
+    }
+}
+
+
 async function addRoleToUser(userId, roleRef) {
     try {
         const pool = await connect();
@@ -48,5 +61,6 @@ async function addRoleToUser(userId, roleRef) {
 module.exports = {
     createUser,
     getUserByUserName,
-    addRoleToUser
+    addRoleToUser,
+    findUser
 }

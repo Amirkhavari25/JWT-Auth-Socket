@@ -1,4 +1,4 @@
-const { createUser, getUserByUserName, addRoleToUser } = require('../models/userModel');
+const { createUser, getUserByUserName, addRoleToUser, findUser } = require('../models/userModel');
 const bcrypt = require('bcrypt');
 
 const registerUser = async (req, res) => {
@@ -28,7 +28,22 @@ const registerUser = async (req, res) => {
     }
 };
 
+const loginUser = async (req, res) => {
+    const { username, password } = req.body;
+    //find user from database
+    const user = await findUser(username);
+    if (!user) {
+        return res.status(404).json({ message: "user not found" });
+    }
+    //check password
+    if (!await bcrypt.compare(password, user.Password)) {
+        return res.status(401).json({ message: 'wrong password' });
+    }
+    //create token for user
+
+    //return user and token
+
+}
 
 
-
-module.exports = { registerUser }
+module.exports = { registerUser, loginUser }
