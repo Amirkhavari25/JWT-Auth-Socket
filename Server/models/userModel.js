@@ -1,10 +1,10 @@
-const { connect } = require('../config/dbConfig');
+const { connect } = require('../utils/dbConfig');
 
 
 async function createUser(email, username, password) {
     try {
         const pool = await connect();
-        await pool.request().input('username', username)
+        const result = await pool.request().input('username', username)
             .input('email', email)
             .input('password', password)
             .input('createBy', "server")
@@ -14,6 +14,7 @@ async function createUser(email, username, password) {
             .input('isDelete', false)
             .query(`INSERT INTO Users (Email,Username,Password,CreateBy,StatusId,CreateDate,LastModifyDate,IsDelete)
                   VALUES (@email,@userName,@password,@createBy,@statusId,@createDate,@lastModifyDate,@isDelete)`);
+        return result;
     } catch (err) {
         throw err;
     }

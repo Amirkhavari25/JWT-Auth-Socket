@@ -1,3 +1,4 @@
+const path = require('path');
 const fs = require('fs').promises;
 const jwt = require('jsonwebtoken');
 const { generateRSAKey } = require('./RSAGenerator');
@@ -5,14 +6,15 @@ const { generateRSAKey } = require('./RSAGenerator');
 
 
 async function createToken(payload) {
-    const privateKey = await fs.readFile('private.key', 'utf8');
-    const publicKey = await fs.readFile('public.key', 'utf8');
-    if (!privateKey || !publicKey) {
+    try {
         await generateRSAKey();
+        const privateKey = fs.readFileSync(path.join(__dirname, './private.key'), 'utf8');
+        // Create the token using the private key
+        const token = jwt.sign(payload, privateKey, { algorithm: 'RS256' });
+        return token;
+    } catch (err) {
+        console.log(`generting token error : ${err}`);
     }
-    // Create the token using the private key
-    const token = jwt.sign(payload, privateKey, { algorithm: 'RS256' });
-    return token;
 }
 
 

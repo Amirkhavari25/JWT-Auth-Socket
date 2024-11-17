@@ -1,12 +1,19 @@
-const fs = require('fs').promises;
-const { existsSync } = require('fs');
 const { generateKeyPair } = require('crypto');
+const fs = require('fs').promises;
+const path = require('path');
+const { existsSync } = require('fs');
+
+
+
 
 
 async function generateRSAKey() {
     try {
+        const utilsDir = path.join(__dirname, 'utils');
+        const privateKeyPath = path.join(utilsDir, 'private.key');
+        const publicKeyPath = path.join(utilsDir, 'public.key');
         // Check if keys already exist
-        if (!existsSync('private.key') || !existsSync('public.key')) {
+        if (!existsSync(privateKeyPath) || !existsSync(publicKeyPath)) {
             const { publicKey, privateKey } = await new Promise((resolve, reject) => {
                 generateKeyPair('rsa', {
                     modulusLength: 2048,
@@ -26,9 +33,10 @@ async function generateRSAKey() {
                     }
                 });
             });
-            // Save the keys to the file system
-            await fs.writeFile('private.key', privateKey);
-            await fs.writeFile('public.key', publicKey);
+
+            // Save the keys 
+            await fs.writeFile(privateKeyPath, privateKey);
+            await fs.writeFile(publicKeyPath, publicKey);
             console.log('Keys generated and saved to files');
         } else {
             console.log('Keys already exist');
@@ -40,6 +48,7 @@ async function generateRSAKey() {
 
 
 
+
 module.exports = {
-    generateRSAKey
+    generateRSAKey,
 }
