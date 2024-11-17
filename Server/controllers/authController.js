@@ -1,7 +1,7 @@
 const { createUser, getUserByUserName, addRoleToUser, findUser } = require('../models/userModel');
 const bcrypt = require('bcrypt');
 const { createToken } = require('../utils/tokenGenerator');
-
+const transporter = require('../Utils/sendEmail');
 
 
 
@@ -59,5 +59,54 @@ const loginUser = async (req, res) => {
 
 }
 
+const forgetPassword = async (req, res) => {
+    const { email } = req.body;
+    try {
 
-module.exports = { registerUser, loginUser }
+        const user = await findUser(email);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        const resetToken = crypto.randomBytes(20).toString('hex');
+        // await updateResetToken(email, resetToken);
+
+        const resetLink = `http://localhost:7070/resetPasword?token=${resetToken}`;
+        const mailOptions = {
+            from: 'khavariamir25@gmail.com',
+            to: email,
+            subject: 'Password Reset',
+            text: `Please click the following link to reset your password: ${resetLink}`
+        };
+        //send email tool
+        transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+                console.error('Error sending email:', error);  // Log the error
+                return res.status(500).json({ message: 'Error sending email' });
+            }
+            res.status(200).json({ message: 'Reset link sent to your email' });
+        });
+    } catch (error) {
+        res.status(500).json({ message: 'Error processing request' });
+    }
+}
+
+
+const resetPassword = async (req, res) => {
+    const { token, newPassword } = req.body;
+    try {
+        //get user by reset token
+        // const user = await getUserByResetToken(token);
+        // if (!user) {
+        //     return res.status(400).json({ message: 'Invalid or expired reset token' });
+        // }
+
+        //await updatePassword(user.email, newPassword);
+        res.status(200).json({ message: 'Password reset successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error resetting password' });
+    }
+}
+
+
+
+module.exports = { registerUser, loginUser, forgetPassword, resetPassword }

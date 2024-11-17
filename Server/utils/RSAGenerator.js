@@ -9,9 +9,8 @@ const { existsSync } = require('fs');
 
 async function generateRSAKey() {
     try {
-        const utilsDir = path.join(__dirname, 'utils');
-        const privateKeyPath = path.join(utilsDir, 'private.key');
-        const publicKeyPath = path.join(utilsDir, 'public.key');
+        const privateKeyPath = path.join(__dirname, 'private.key');
+        const publicKeyPath = path.join(__dirname, 'public.key');
         // Check if keys already exist
         if (!existsSync(privateKeyPath) || !existsSync(publicKeyPath)) {
             const { publicKey, privateKey } = await new Promise((resolve, reject) => {
