@@ -20,19 +20,6 @@ async function createUser(email, username, password) {
     }
 }
 
-async function getUserByUserName(userName, email) {
-    try {
-        const pool = await connect();
-        const result = await pool.request().input('userName', userName)
-            .input('email', email)
-            .query('SELECT * FROM Users WHERE Username = @userName or Email=@email');
-        return result.recordset[0];
-    } catch (err) {
-        throw err;
-    }
-}
-
-
 async function findUser(username) {
     try {
         const pool = await connect();
@@ -57,11 +44,51 @@ async function addRoleToUser(userId, roleRef) {
     }
 }
 
+async function updateResetToken(email, resetToken) {
+    try {
+        const pool = await connect();
+        await pool.request()
+            .input('email', email)
+            .input('resetToken', resetToken)
+            .query('UPDATE Users SET ResetToken=@resetToken WHERE Email=@email');
+    } catch (err) {
+        throw err;
+    }
+}
+
+
+async function getUserByResetToken(resetToken) {
+    try {
+        const pool = await connect();
+        await pool.request()
+            .input('resetToken', resetToken)
+            .query('SELECT * FROM Users WHERE ResetToken=@resetToken');
+    } catch (err) {
+        throw err;
+    }
+}
+
+
+async function updatePassword(email, hashedPassword) {
+    try {
+        const pool = await connect();
+        await pool.request()
+            .input('email', email)
+            .input('newPassword', hashedPassword)
+            .query('UPDATE Users SET Password=@newPassword WHERE Email=@email');
+    } catch (err) {
+        throw err;
+    }
+}
+
+
 
 
 module.exports = {
     createUser,
-    getUserByUserName,
     addRoleToUser,
-    findUser
+    findUser,
+    updateResetToken,
+    getUserByResetToken,
+    updatePassword
 }
