@@ -4,9 +4,6 @@ const path = require('path');
 const { existsSync } = require('fs');
 
 
-
-
-
 async function generateRSAKey() {
     try {
         const privateKeyPath = path.join(__dirname, 'private.key');

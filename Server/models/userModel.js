@@ -51,8 +51,7 @@ async function updateResetToken(email, resetToken) {
             .query(`
               UPDATE Users 
                 SET ResetToken = @resetToken, 
-                    ResetTokenExpiry = DATEADD(MINUTE, 2, GETDATE()), 
-                    ForgetPasswordAttempts = ForgetPasswordAttempts +1
+                    ResetTokenExpiry = DATEADD(MINUTE, 2, GETDATE()) 
                 WHERE Email = @email  
             `);
     } catch (err) {
@@ -66,13 +65,11 @@ async function getResetToken(resetToken) {
         const result = await pool.request()
             .input('resetToken', resetToken)
             .query('SELECT ResetToken FROM Users where ResetToken=@resetToken and ResetTokenExpiry>=GETDATE()');
-        return result.recordset[0].ResetToken;
+        return result.recordset[0];
     } catch (err) {
         console.log(err)
-        throw err;
     }
 }
-
 
 async function updatePassword(email, hashedPassword) {
     try {
@@ -88,7 +85,6 @@ async function updatePassword(email, hashedPassword) {
         throw err;
     }
 }
-
 
 async function increaseForgetPasswordAttempts(email) {
     try {
@@ -137,6 +133,17 @@ async function increaseResetTokenAttemp(email) {
 }
 
 
+async function clearResetToken(email){
+    try {
+        const pool = await connect();
+        await pool.request()
+            .input('email', email)
+            .query('UPDATE Users SET ResetToken=NULL,ResetTokenExpiry=NULL,ResetPasswordAttempts=0 WHERE Email=@email');
+    } catch (err) {
+        throw err;
+    }
+}
+
 
 module.exports = {
     createUser,
@@ -147,4 +154,5 @@ module.exports = {
     updatePassword,
     increaseResetTokenAttemp,
     increaseForgetPasswordAttempts,
+    clearResetToken
 }

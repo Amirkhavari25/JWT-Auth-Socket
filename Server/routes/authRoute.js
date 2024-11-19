@@ -11,8 +11,8 @@ router.get('/', (req, res) => {
 
 router.post('/register', registerUser);
 router.post('/login', loginUser);
-router.post('/forgetPasword', forgetPassword);
-router.post('/resetPasword', resetPassword);
+router.post('/forgetPassword', forgetPassword);
+router.post('/resetPassword', resetPassword);
 
 
 
