@@ -7,6 +7,7 @@ const { createUser,
     increaseResetTokenAttemp,
     increaseForgetPasswordAttempts,
     clearResetToken } = require('../models/userModel');
+const { getDeviceByUser } = require('../models/deviceModel');
 const bcrypt = require('bcrypt');
 const { createToken } = require('../utils/tokenGenerator');
 const transporter = require('../Utils/sendEmail');
@@ -51,15 +52,20 @@ const loginUser = async (req, res) => {
         if (!await bcrypt.compare(password, user.Password)) {
             return res.status(401).json({ message: 'wrong password' });
         }
+        //find user device
+        const devices = await getDeviceByUser();
+        const imeis = devices.recordset.length > 0 ? devices.recordset.map(row => row.IMEI) : '[]';
+
         //create token for user
         const payload = {
             id: user.Id,
             username: user.Username,
-            email: user.Email
+            email: user.Email,
+            imeis: imeis
         };
         const token = await createToken(payload);
         //return user and token
-        return res.status(200).json({ token, user: payload });
+        return res.status(200).json({ token, user: payload, imeis: imeis });
     } catch (err) {
         console.log(`login error is: ${err}`)
         return res.status(500).json({ message: 'something went wrong, server error' });

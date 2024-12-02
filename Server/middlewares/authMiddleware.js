@@ -20,6 +20,23 @@ const authenticateAPI = async (req, res, next) => {
     }
 }
 
+const authenticateWebSocket = (ws, req, next) => {
+    const urlParams = new URLSearchParams(req.url.split('?')[1] || '');
+    const token = urlParams.get('token');
+
+    if (!token) {
+        ws.close(1008, 'Access denied. No token provided.'); 
+        return;
+    }
+
+    try {
+        const decoded = jwt.verify(token, publickey, { algorithms: ['RS256'] });
+        ws.user = decoded;
+        next();
+    } catch (error) {
+        ws.close(1008, 'Invalid token.');
+    }
+};
 
 
 
@@ -27,5 +44,6 @@ const authenticateAPI = async (req, res, next) => {
 
 
 module.exports = {
-    authenticateAPI
+    authenticateAPI,
+    authenticateWebSocket
 }
