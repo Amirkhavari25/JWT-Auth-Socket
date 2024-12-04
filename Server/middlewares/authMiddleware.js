@@ -1,10 +1,9 @@
 const path = require('path');
 const jwt = require('jsonwebtoken');
-const path = require('path');
-const fs = require('fs').promises;
+const fs = require('fs');
 
 
-const publickey = await fs.readFile(path.join(__dirname, '../utils', 'public.key'), 'utf-8');
+const publickey = fs.readFileSync(path.join(__dirname, '../utils', 'public.key'), 'utf-8');
 
 const authenticateAPI = async (req, res, next) => {
     const token = req.header('Authorization') ? req.header('Authorization') : req.body.token;
@@ -23,9 +22,8 @@ const authenticateAPI = async (req, res, next) => {
 const authenticateWebSocket = (ws, req, next) => {
     const urlParams = new URLSearchParams(req.url.split('?')[1] || '');
     const token = urlParams.get('token');
-
     if (!token) {
-        ws.close(1008, 'Access denied. No token provided.'); 
+        ws.close(1008, 'Access denied. No token provided.');
         return;
     }
 
@@ -34,6 +32,7 @@ const authenticateWebSocket = (ws, req, next) => {
         ws.user = decoded;
         next();
     } catch (error) {
+        console.log(`Invalid token error: ${error}`);
         ws.close(1008, 'Invalid token.');
     }
 };

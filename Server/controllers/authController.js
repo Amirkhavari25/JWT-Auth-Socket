@@ -54,7 +54,7 @@ const loginUser = async (req, res) => {
         }
         //find user device
         const devices = await getDeviceByUser();
-        const imeis = devices.recordset.length > 0 ? devices.recordset.map(row => row.IMEI) : '[]';
+        const imeis = devices ? devices.recordset.map(row => row.IMEI) : '[]';
 
         //create token for user
         const payload = {
