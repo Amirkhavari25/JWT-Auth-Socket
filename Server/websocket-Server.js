@@ -3,7 +3,7 @@ const WebSocket = require('ws');
 
 const wss = new WebSocket.Server({ port: 7070 });
 
-const userDevices = [];
+var userDevices = [];
 
 wss.on('connection', (ws, req) => {
     authenticateWebSocket(ws, req, () => {
